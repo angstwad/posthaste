@@ -30,6 +30,8 @@ import functools
 import time
 import threading
 
+from six import print_, iteritems
+
 
 def handle_args():
     parser = argparse.ArgumentParser()
@@ -112,7 +114,7 @@ class Posthaste(object):
                     f(*args, **kwargs)
                 except AuthenticationError:
                     with self.semaphore:
-                        print ("Thread session died; attempting "
+                        print_("Thread session died; attempting "
                                "re-authentication.")
                         self._authenticate()
                         self._num_auths += 1
@@ -236,11 +238,11 @@ class Posthaste(object):
         @self.requires_auth
         def _delete(i, files, errors):
             if verbose:
-                print 'Starting thread %s' % i
+                print_('Starting thread %s' % i)
             s = requests.Session()
             for f in files:
                 if verbose > 1:
-                    print 'Deleting %s' % f
+                    print_('Deleting %s' % f)
                 try:
                     r = s.delete('%s/%s/%s' % (self.endpoint, container, f),
                                  headers={'X-Auth-Token': self.token})
@@ -263,7 +265,7 @@ class Posthaste(object):
                             'response': json.loads(r.text)
                         })
             if verbose:
-                print 'Completed thread %s' % i
+                print_('Completed thread %s' % i)
 
         files = collections.defaultdict(list)
         thread_mark = threads
@@ -281,7 +283,7 @@ class Posthaste(object):
 
         pool = Pool(size=threads)
         errors = []
-        for i, file_chunk in files.iteritems():
+        for i, file_chunk in iteritems(files):
             pool.spawn(_delete, i, file_chunk, errors)
         pool.join()
         return errors
@@ -290,13 +292,13 @@ class Posthaste(object):
         @self.requires_auth
         def _upload(i, files, errors):
             if verbose:
-                print 'Starting thread %s' % i
+                print_('Starting thread %s' % i)
             s = requests.Session()
             for fobj in files:
                 with open(fobj['path'], 'rb') as f:
                     body = f.read()
                 if verbose > 1:
-                    print 'Uploading %s' % fobj['name']
+                    print_('Uploading %s' % fobj['name'])
                 try:
                     r = s.put('%s/%s/%s' %
                               (self.endpoint,  container,  fobj['name']),
@@ -322,9 +324,9 @@ class Posthaste(object):
                             'response': json.loads(r.text)
                         })
             if verbose:
-                print 'Completed thread %s' % i
+                print_('Completed thread %s' % i)
 
-        print "Uploading."
+        print_('Uploading.')
         file_chunks = collections.defaultdict(list)
         thread_mark = threads
         files_per_thread = len(self.files) / threads / 3
@@ -342,7 +344,7 @@ class Posthaste(object):
         pool = Pool(size=threads)
 
         errors = []
-        for i, file_chunk in file_chunks.iteritems():
+        for i, file_chunk in iteritems(file_chunks):
             pool.spawn(_upload, i, file_chunk, errors)
         pool.join()
         return errors
@@ -351,16 +353,16 @@ class Posthaste(object):
         @self.requires_auth
         def _download(i, files, directory, errors):
             if verbose:
-                print 'Starting thread %s' % i
+                print_('Starting thread %s' % i)
             s = requests.Session()
             directory = os.path.abspath(directory)
             for filename in files:
                 if verbose > 1:
-                    print 'Downloading %s' % filename
+                    print_('Downloading %s' % filename)
                 try:
                     path = os.path.join(directory, filename)
                     try:
-                        os.makedirs(os.path.dirname(path), 0755)
+                        os.makedirs(os.path.dirname(path), 493)  # 0755
                     except OSError as e:
                         if e.errno != 17:
                             raise
@@ -394,7 +396,7 @@ class Posthaste(object):
                             'response': json.loads(r.text)
                         })
             if verbose:
-                print 'Completed thread %s' % i
+                print_('Completed thread %s' % i)
 
         files = collections.defaultdict(list)
         thread_mark = threads
@@ -412,7 +414,7 @@ class Posthaste(object):
 
         pool = Pool(size=threads)
         errors = []
-        for i, file_chunk in files.iteritems():
+        for i, file_chunk in iteritems(files):
             pool.spawn(_download, i, file_chunk, directory, errors)
         pool.join()
         return errors
@@ -435,10 +437,10 @@ def shell():
                                          args.verbose)
 
     if errors:
-        print '\nErrors:'
-        print json.dumps(errors, indent=4)
+        print_('\nErrors:')
+        print_(json.dumps(errors, indent=4))
     else:
-        print '\nCompleted Successfully'
+        print_('\nCompleted Successfully')
 
 
 if __name__ == '__main__':
