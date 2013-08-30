@@ -1,14 +1,25 @@
-# posthaste
+posthaste
+=========
 
-OpenStack Swift threaded operation utility for Uploading, Downloading and Deleting
+OpenStack Swift threaded operation utility for Uploading, Downloading
+and Deleting
 
-## Requirements
+Requirements
+------------
 
-posthaste currently requires [gevent](http://www.gevent.org/), which in turn requires [greenlet](https://pypi.python.org/pypi/greenlet) and [libevent](http://libevent.org/). 
+posthaste currently requires `gevent <http://www.gevent.org/>`_, which
+in turn requires `greenlet <https://pypi.python.org/pypi/greenlet>`_ and
+`libevent <http://libevent.org/>`_.
 
-The "new" Gevent (as of this writing, 1.0 RC 2) alleviates the libevent dependency and thus simplifies the process of using tool.  More information can be found on [Github](https://github.com/surfly/gevent#installing-from-github).
+The "new" Gevent (as of this writing, 1.0 RC 2) alleviates the libevent
+dependency and thus simplifies the process of using tool. More
+information can be found on
+`Github <https://github.com/surfly/gevent#installing-from-github>`_.
 
-## Usage
+Usage
+-----
+
+::
 
     usage: posthaste.py [-h] -c CONTAINER [-r REGION] [--internal] [-t THREADS]
                         [-u USERNAME] [-p PASSWORD] [-i {rackspace,keystone}]
@@ -53,16 +64,18 @@ The "new" Gevent (as of this writing, 1.0 RC 2) alleviates the libevent dependen
                             verbosity. 1) Show Thread Start/Finish, 2) Show Object
                             Name.
 
-## Examples
+Examples
+--------
 
-```shell
-python posthaste.py -c example -r DFW -u $OS_USERNAME -p $OS_PASSWORD -t 100 upload /path/to/some/dir/
-```
+::
 
-```shell
-python posthaste.py -c example -r DFW -u $OS_USERNAME -p $OS_PASSWORD -t 100 download /path/to/some/dir/
-```
+    python posthaste.py -c example -r DFW -u $OS_USERNAME -p $OS_PASSWORD -t 100 upload /path/to/some/dir/
 
-```shell
-python posthaste.py -c example -r DFW -u $OS_USERNAME -p $OS_PASSWORD -t 100 delete
-```
+::
+
+    python posthaste.py -c example -r DFW -u $OS_USERNAME -p $OS_PASSWORD -t 100 download /path/to/some/dir/
+
+::
+
+    python posthaste.py -c example -r DFW -u $OS_USERNAME -p $OS_PASSWORD -t 100 delete
+
